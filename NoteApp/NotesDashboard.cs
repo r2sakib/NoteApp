@@ -21,8 +21,9 @@ namespace NoteApp
 
             //InitializeComponent();
             SetupNotesContainer();
-            SetupTitleLabel();
+            SetupHeader();
             LoadNotes(GetAllNotesFromDB());
+            SearchNotes("");
         }
 
         private DataTable GetAllNotesFromDB()
@@ -73,8 +74,9 @@ namespace NoteApp
             }
         }
 
-        private void SetupTitleLabel()
+        private void SetupHeader()
         {
+            // Title label
             Label titleLabel = new Label
             {
                 Text = "Notes Dashboard",
@@ -83,12 +85,147 @@ namespace NoteApp
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Dock = DockStyle.Top,
-                Height = 50,
+                Height = 60,
                 Padding = new Padding(20, 15, 0, 0)
             };
+            titleLabel.AutoSize = true;
             this.Controls.Add(titleLabel);
 
-            
+            // Search Panel
+            Panel searchPanel = new Panel
+            {
+                Height = 40,
+                Width = 450,
+                Location = new Point((this.ClientSize.Width - 430) / 2, 15),
+                Anchor = AnchorStyles.Top
+            };
+
+            // Search TextBox
+            TextBox searchBox = new TextBox
+            {
+                Width = 350,
+                Height = 30,
+                Location = new Point(0, 5),
+                Font = new Font("Segoe UI", 10),
+                BorderStyle = BorderStyle.FixedSingle,
+                Padding = new Padding(5),
+                Text = "Search notes"
+            };
+
+            searchBox.GotFocus += (s, e) =>
+            {
+                if (searchBox.Text == "Search notes")
+                {
+                    searchBox.Text = "";
+                    searchBox.ForeColor = Color.Black;
+                }
+            };
+
+            searchBox.LostFocus += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(searchBox.Text))
+                {
+                    searchBox.Text = "Search notes";
+                    searchBox.ForeColor = Color.Gray;
+                }
+            };
+
+            // Search Button
+            Button searchButton = new Button
+            {
+                Text = "Search",
+                Width = 70,
+                Height = 25,
+                Location = new Point(370, 5),
+                BackColor = Color.FromArgb(0, 123, 255),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9),
+                Cursor = Cursors.Hand
+            };
+            searchButton.FlatAppearance.BorderSize = 0;
+
+            searchButton.Click += (s, e) => SearchNotes(searchBox.Text);
+            searchButton.Click += (s, e) => SearchNotes(searchBox.Text);
+
+            searchBox.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    SearchNotes(searchBox.Text);
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                }
+            };
+
+            searchPanel.Controls.Add(searchBox);
+            searchPanel.Controls.Add(searchButton);
+
+            this.Controls.Add(searchPanel);
+
+
+            Panel rightPanel = new Panel
+            {
+                Height = 40,
+                Width = 380,
+                Location = new Point(this.ClientSize.Width - 400, 15),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                BackColor = Color.Transparent
+            };
+
+            // Edit Profile Button
+            Button editProfileButton = new Button
+            {
+                Text = "Edit Profile",
+                Width = 100,
+                Height = 30,
+                Location = new Point(0, 5),
+                BackColor = Color.FromArgb(52, 152, 219),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9),
+                Cursor = Cursors.Hand
+            };
+            editProfileButton.FlatAppearance.BorderSize = 0;
+            editProfileButton.Click += (s, e) => EditProfile();
+
+            // Create Note Button
+            Button createNoteButton = new Button
+            {
+                Text = "Create Note",
+                Width = 120,
+                Height = 30,
+                Location = new Point(120, 5),
+                BackColor = Color.FromArgb(40, 167, 69),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9),
+                Cursor = Cursors.Hand
+            };
+
+            createNoteButton.FlatAppearance.BorderSize = 0;
+            createNoteButton.Click += (s, e) => CreateNote();
+
+            // Logout Button
+            Button logoutButton = new Button
+            {
+                Text = "Logout",
+                Width = 100,
+                Height = 30,
+                Location = new Point(260, 5),
+                BackColor = Color.FromArgb(220, 53, 69),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9),
+                Cursor = Cursors.Hand
+            };
+            logoutButton.FlatAppearance.BorderSize = 0;
+            logoutButton.Click += (s, e) => Logout();
+
+            rightPanel.Controls.Add(editProfileButton);
+            rightPanel.Controls.Add(createNoteButton);
+            rightPanel.Controls.Add(logoutButton);
+            this.Controls.Add(rightPanel);
         }
 
         private void SetupNotesContainer()
@@ -100,7 +237,7 @@ namespace NoteApp
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 AutoScroll = true,
-                Padding = new Padding(20),
+                Padding = new Padding(20, 50, 20, 20),
                 BackColor = Color.FromArgb(245, 245, 245),
                 Top = 70
             };
@@ -191,11 +328,12 @@ namespace NoteApp
             Button viewButton = new Button
             {
                 Text = "View",
-                Size = new Size(60, 35),
+                Size = new Size(60, 30),
                 Location = new Point(15, 150),
                 BackColor = Color.FromArgb(0, 123, 255),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
             };
             viewButton.FlatAppearance.BorderSize = 0;
             viewButton.Font = new Font("Segoe UI", 8);
@@ -204,11 +342,12 @@ namespace NoteApp
             Button editButton = new Button
             {
                 Text = "Edit",
-                Size = new Size(60, 35),
+                Size = new Size(60, 30),
                 Location = new Point(85, 150),
                 BackColor = Color.FromArgb(108, 117, 125),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
             };
             editButton.FlatAppearance.BorderSize = 0;
             editButton.Font = new Font("Segoe UI", 8);
@@ -217,11 +356,12 @@ namespace NoteApp
             Button approveButton = new Button
             {
                 Text = "Approve",
-                Size = new Size(60, 35),
+                Size = new Size(60, 30),
                 Location = new Point(85, 150),
                 BackColor = Color.FromArgb(40, 167, 69),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
             };
             approveButton.FlatAppearance.BorderSize = 0;
             approveButton.Font = new Font("Segoe UI", 8);
@@ -230,11 +370,12 @@ namespace NoteApp
             Button disApproveButton = new Button
             {
                 Text = "Disapprove",
-                Size = new Size(75, 35),
+                Size = new Size(75, 30),
                 Location = new Point(85, 150),
                 BackColor = Color.FromArgb(220, 53, 69),
                 ForeColor = Color.White,
-                FlatStyle = FlatStyle.Flat
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand,
             };
             disApproveButton.FlatAppearance.BorderSize = 0;
             disApproveButton.Font = new Font("Segoe UI", 8);
@@ -257,16 +398,92 @@ namespace NoteApp
 
         });
 
-            if (userType == "User")
+            if (UserType == "User")
                 card.Controls.Add(editButton);
 
-            if (!isApproved && userType == "Admin")
+            if (!isApproved && UserType == "Admin")
                 card.Controls.Add(approveButton);
 
-            if (isApproved && userType == "Admin")
+            if (isApproved && UserType == "Admin")
                 card.Controls.Add(disApproveButton);
 
             return card;
+        }
+
+        private void Logout()
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to logout?", "Logout",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                this.Close();
+                // new Login().Show();
+            }
+        }
+
+        private void EditProfile()
+        {
+            MessageBox.Show("Edit Profile clicked.");
+        }
+
+        private void CreateNote()
+        {
+            MessageBox.Show("Create Note clicked.");
+        }
+
+        private DataTable SearchNotesFromDB(string searchQuery)
+        {
+            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\NoteApp.mdf;Integrated Security=True;Connect Timeout=30";
+
+            string query;
+            if (UserType == "Admin")
+            {
+                query = @"SELECT NoteID, Title, Content, CreatedDate, ModifiedDate, Approved, Tags, AuthorID 
+                FROM [dbo].[Notes] 
+                WHERE Title LIKE @Search OR Content LIKE @Search OR Tags LIKE @Search
+                ORDER BY CreatedDate DESC";
+            }
+            else
+            {
+                query = @"SELECT NoteID, Title, Content, CreatedDate, ModifiedDate, Approved, Tags, AuthorID
+                FROM [dbo].[Notes] 
+                WHERE (Title LIKE @Search OR Content LIKE @Search OR Tags LIKE @Search)
+                AND Approved = 1
+                ORDER BY CreatedDate DESC";
+            }
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlCommand cmd = new SqlCommand(query, connection);
+                cmd.Parameters.AddWithValue("@Search", "%" + searchQuery + "%");
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                return dt;
+            }
+        }
+
+        private void SearchNotes(string searchQuery)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery) || searchQuery == "Search notes")
+            {
+                // If search is empty, show all notes
+                LoadNotes(GetAllNotesFromDB());
+                return;
+            }
+
+            try
+            {
+                DataTable results = SearchNotesFromDB(searchQuery);
+                LoadNotes(results);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while searching notes: {ex.Message}", "Search Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ViewNote(Note note)

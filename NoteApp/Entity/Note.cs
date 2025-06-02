@@ -62,6 +62,7 @@ namespace NoteApp
                     command.Parameters.AddWithValue("@NoteID", Id);
                     connection.Open();
                     int rowsAffected = command.ExecuteNonQuery();
+                    connection.Close();
                     return rowsAffected > 0;
                 }
             }

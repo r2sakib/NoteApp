@@ -110,10 +110,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="NoteApp.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="NoteApp_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>NoteApp.mdf</DependentUpon>
     </Content>
   </ItemGroup>
