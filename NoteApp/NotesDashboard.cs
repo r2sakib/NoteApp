@@ -23,11 +23,12 @@ namespace NoteApp
             this.Size = new Size(1200, 800);
 
             string bgPath = Path.Combine(Application.StartupPath, "Resources", "background.png");
-            if (File.Exists(bgPath))
-            {
-                this.BackgroundImage = Image.FromFile(bgPath);
-                this.BackgroundImageLayout = ImageLayout.Stretch;
-            }
+            //if (File.Exists(bgPath))
+            //{
+            //    this.BackgroundImage = Image.FromFile(bgPath);
+            //    this.BackgroundImageLayout = ImageLayout.Stretch;
+            //}
+                this.BackColor = Color.FromArgb(242, 242, 242);
 
             //InitializeComponent();
             SetupNotesContainer();
@@ -87,6 +88,9 @@ namespace NoteApp
 
         private void SetupHeader()
         {
+            Color headerButtonColor = Color.White;
+            int headerButtonBorder = 1;
+
             // Title label
             Label titleLabel = new Label
             {
@@ -152,15 +156,15 @@ namespace NoteApp
             {
                 Text = "Search",
                 Width = 70,
-                Height = 25,
-                Location = new Point(490, 10),
-                BackColor = Color.FromArgb(242, 242, 242),
+                Height = 30,
+                Location = new Point(490, 8),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.System,
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            searchButton.FlatAppearance.BorderSize = 1;
+            searchButton.FlatAppearance.BorderSize = headerButtonBorder;
             searchButton.FlatAppearance.BorderColor = Color.Black;
 
 
@@ -189,13 +193,13 @@ namespace NoteApp
                 Width = 100,
                 Height = 30,
                 Location = new Point(0, 5),
-                BackColor = Color.FromArgb(242, 242, 242),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            authorNotesBtn.FlatAppearance.BorderSize = 1;
+            authorNotesBtn.FlatAppearance.BorderSize = headerButtonBorder;
             authorNotesBtn.FlatAppearance.BorderColor = Color.Black;
 
             authorNotesBtn.Click += (s, e) =>
@@ -233,13 +237,13 @@ namespace NoteApp
                 Width = 100,
                 Height = 30,
                 Location = new Point(10, 5),
-                //BackColor = Color.FromArgb(242, 242, 242),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            editProfileButton.FlatAppearance.BorderSize = 1;
+            editProfileButton.FlatAppearance.BorderSize = headerButtonBorder;
             editProfileButton.FlatAppearance.BorderColor = Color.Black;
             editProfileButton.Click += (s, e) => EditProfile();
 
@@ -250,14 +254,14 @@ namespace NoteApp
                 Width = 110,
                 Height = 30,
                 Location = new Point(130, 5),
-                BackColor = Color.FromArgb(242, 242, 242),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
 
-            createNoteButton.FlatAppearance.BorderSize = 1;
+            createNoteButton.FlatAppearance.BorderSize = headerButtonBorder;
             createNoteButton.FlatAppearance.BorderColor = Color.Black;
             createNoteButton.Click += (s, e) => CreateNote();
 
@@ -274,7 +278,7 @@ namespace NoteApp
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            logoutButton.FlatAppearance.BorderSize = 1;
+            logoutButton.FlatAppearance.BorderSize = headerButtonBorder;
             logoutButton.FlatAppearance.BorderColor = Color.Black;
             logoutButton.Click += (s, e) => Logout();
 
@@ -302,13 +306,13 @@ namespace NoteApp
                 Width = 100,
                 Height = 30,
                 Location = new Point(0, 5),
-                BackColor = Color.FromArgb(242, 242, 242),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            approveFilterBtn.FlatAppearance.BorderSize = 1;
+            approveFilterBtn.FlatAppearance.BorderSize = headerButtonBorder;
             approveFilterBtn.FlatAppearance.BorderColor = Color.Black;
             rightPanel.Controls.Add(approveFilterBtn);
 
@@ -319,13 +323,13 @@ namespace NoteApp
                 Width = 120,
                 Height = 30,
                 Location = new Point(120, 5),
-                BackColor = Color.FromArgb(242, 242, 242),
+                BackColor = headerButtonColor,
                 ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            disapproveFilterBtn.FlatAppearance.BorderSize = 1;
+            disapproveFilterBtn.FlatAppearance.BorderSize = headerButtonBorder;
             disapproveFilterBtn.FlatAppearance.BorderColor = Color.Black;
             rightPanel.Controls.Add(disapproveFilterBtn);
 
@@ -397,16 +401,20 @@ namespace NoteApp
 
         private Panel CreateNoteCard(Note note)
         {
+            Color buttonColor = Color.FromArgb(235, 235, 235);
+            int buttonBorder = 0;
+
             // Scaling factor for the new size
             float scaleFactor = 1.3f;
 
-            // Main card panel - increased size
-            Panel card = new Panel
+            // Use the custom BorderedPanel instead of Panel
+            BorderedPanel card = new BorderedPanel
             {
                 Size = new Size((int)(300 * scaleFactor), (int)(200 * scaleFactor)),
                 Margin = new Padding(20),
                 BackColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle
+                BorderColor = Color.FromArgb(242, 242, 242),
+                BorderThickness = 0,
             };
 
             // Calculate card dimensions for easier positioning
@@ -418,7 +426,7 @@ namespace NoteApp
             {
                 Text = note.Title,
                 Font = new Font("Segoe UI", 16, FontStyle.Bold),
-                ForeColor = Color.SlateBlue,
+                ForeColor = Color.FromArgb(51, 51, 51),
                 Location = new Point(15, 15),
                 Size = new Size(cardWidth - 44, 30),
                 TextAlign = ContentAlignment.MiddleLeft
@@ -492,13 +500,18 @@ namespace NoteApp
                 Size = new Size(80, 35),
                 Location = new Point(15, cardHeight - 50),
                 ForeColor = Color.Black,
-                BackColor = Color.FromArgb(242, 242, 242),
-                FlatStyle = FlatStyle.Flat,
+                BackColor = buttonColor,
+                FlatStyle = FlatStyle.System,
                 Cursor = Cursors.Hand,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold)
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
             };
-            viewButton.FlatAppearance.BorderSize = 1;
-            viewButton.FlatAppearance.BorderColor = Color.Black;
+            viewButton.FlatAppearance.BorderSize = buttonBorder;
+            viewButton.FlatAppearance.BorderColor = buttonColor;
+
+            //viewButton.MouseHover += (s, e) =>
+            //{
+            //    viewButton.BackColor = Color.Red;
+            //};
 
             // Edit button
             Button editButton = new Button
@@ -507,12 +520,12 @@ namespace NoteApp
                 Size = new Size(80, 35),
                 Location = new Point(112, cardHeight - 50),
                 ForeColor = Color.Black,
-                BackColor = Color.FromArgb(242, 242, 242),
-                FlatStyle = FlatStyle.Flat,
+                BackColor = buttonColor,
+                FlatStyle = FlatStyle.System,
                 Cursor = Cursors.Hand,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            editButton.FlatAppearance.BorderSize = 1;
+            editButton.FlatAppearance.BorderSize = buttonBorder;
             editButton.FlatAppearance.BorderColor = Color.Black;
 
             // Approve button
@@ -522,12 +535,12 @@ namespace NoteApp
                 Size = new Size(90, 35),
                 Location = new Point(112, cardHeight - 50),
                 ForeColor = Color.Black,
-                BackColor = Color.FromArgb(242, 242, 242),
-                FlatStyle = FlatStyle.Flat,
+                BackColor = buttonColor,
+                FlatStyle = FlatStyle.System,
                 Cursor = Cursors.Hand,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            approveButton.FlatAppearance.BorderSize = 1;
+            approveButton.FlatAppearance.BorderSize = buttonBorder;
             approveButton.FlatAppearance.BorderColor = Color.Black;
 
             // Disapprove button
@@ -537,12 +550,12 @@ namespace NoteApp
                 Size = new Size(110, 35),
                 Location = new Point(112, cardHeight - 50),
                 ForeColor = Color.Black,
-                BackColor = Color.FromArgb(242, 242, 242),
-                FlatStyle = FlatStyle.Flat,
+                BackColor = buttonColor ,
+                FlatStyle = FlatStyle.System,
                 Cursor = Cursors.Hand,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            disApproveButton.FlatAppearance.BorderSize = 1;
+            disApproveButton.FlatAppearance.BorderSize = buttonBorder;
             disApproveButton.FlatAppearance.BorderColor = Color.Black;
 
             int noteId = note.Id;
@@ -550,10 +563,6 @@ namespace NoteApp
             editButton.Click += (s, e) => EditNote(note);
             approveButton.Click += (s, e) => ApproveNote(note);
             disApproveButton.Click += (s, e) => DisapproveNote(note);
-
-            // hover effects
-            card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 249, 250);
-            card.MouseLeave += (s, e) => card.BackColor = Color.White;
 
             // Add controls
             card.Controls.AddRange(new Control[] {
@@ -716,4 +725,20 @@ namespace NoteApp
             }
         }
     }
+        // Custom Panel class for border
+        public class BorderedPanel : Panel
+        {
+            public Color BorderColor { get; set; } = Color.Black;
+            public int BorderThickness { get; set; } = 2;
+
+            protected override void OnPaint(PaintEventArgs e)
+            {
+                base.OnPaint(e);
+                using (Pen pen = new Pen(BorderColor, BorderThickness))
+                {
+                    pen.Alignment = System.Drawing.Drawing2D.PenAlignment.Inset;
+                    e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+                }
+            }
+        }
 }
