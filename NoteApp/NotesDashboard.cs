@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace NoteApp
@@ -10,20 +11,30 @@ namespace NoteApp
     {
 
         private string UserType { get; set; }
-        private string Id { get; set; }
+        private string AuthorID { get; set; }
 
         private FlowLayoutPanel notesContainer;
 
-        public NotesDashboard(string userType, string id)
+        public NotesDashboard(string userType, string authorId)
         {
             UserType = userType;
-            Id = id;
+            AuthorID = authorId;
+
+            this.Size = new Size(1200, 800);
+
+            string bgPath = Path.Combine(Application.StartupPath, "Resources", "background.png");
+            if (File.Exists(bgPath))
+            {
+                this.BackgroundImage = Image.FromFile(bgPath);
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
 
             //InitializeComponent();
             SetupNotesContainer();
             SetupHeader();
             LoadNotes(GetAllNotesFromDB());
             SearchNotes("");
+            FilterNotes();
         }
 
         private DataTable GetAllNotesFromDB()
@@ -80,8 +91,9 @@ namespace NoteApp
             Label titleLabel = new Label
             {
                 Text = "Notes Dashboard",
-                Font = new Font("Segoe UI", 20, FontStyle.Bold),
-                ForeColor = Color.FromArgb(44, 62, 80),
+                Font = new Font("Franklin Gothic Demi", 22, FontStyle.Bold),
+                ForeColor = Color.DarkBlue,
+                BackColor = Color.Transparent,
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Dock = DockStyle.Top,
@@ -91,13 +103,15 @@ namespace NoteApp
             titleLabel.AutoSize = true;
             this.Controls.Add(titleLabel);
 
+
             // Search Panel
             Panel searchPanel = new Panel
             {
-                Height = 40,
-                Width = 450,
-                Location = new Point((this.ClientSize.Width - 430) / 2, 15),
-                Anchor = AnchorStyles.Top
+                Height = 60,
+                Width = 600,
+                Location = new Point(titleLabel.Width + 30, 15),
+                Anchor = AnchorStyles.Top,
+                BackColor = Color.Transparent,
             };
 
             // Search TextBox
@@ -105,12 +119,15 @@ namespace NoteApp
             {
                 Width = 350,
                 Height = 30,
-                Location = new Point(0, 5),
+                Location = new Point(120, 10),
                 Font = new Font("Segoe UI", 10),
                 BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(5),
-                Text = "Search notes"
+                Text = "Search notes",
             };
+
+
+            //searchBox.Multiline = true;
+            //searchBox.Padding = new Padding(20, 15, 8, 8);
 
             searchBox.GotFocus += (s, e) =>
             {
@@ -136,14 +153,16 @@ namespace NoteApp
                 Text = "Search",
                 Width = 70,
                 Height = 25,
-                Location = new Point(370, 5),
-                BackColor = Color.FromArgb(0, 123, 255),
-                ForeColor = Color.White,
+                Location = new Point(490, 10),
+                BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9),
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            searchButton.FlatAppearance.BorderSize = 0;
+            searchButton.FlatAppearance.BorderSize = 1;
+            searchButton.FlatAppearance.BorderColor = Color.Black;
+
 
             searchButton.Click += (s, e) => SearchNotes(searchBox.Text);
             searchButton.Click += (s, e) => SearchNotes(searchBox.Text);
@@ -163,6 +182,40 @@ namespace NoteApp
 
             this.Controls.Add(searchPanel);
 
+            // Author Notes filter Button
+            Button authorNotesBtn = new Button
+            {
+                Text = "My Notes",
+                Width = 100,
+                Height = 30,
+                Location = new Point(0, 5),
+                BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            authorNotesBtn.FlatAppearance.BorderSize = 1;
+            authorNotesBtn.FlatAppearance.BorderColor = Color.Black;
+
+            authorNotesBtn.Click += (s, e) =>
+            {
+                if (authorNotesBtn.ForeColor == Color.Black)
+                {
+                    authorNotesBtn.BackColor = Color.Black;
+                    authorNotesBtn.ForeColor = Color.White;
+                    FilterNotes("AuthorNotes");
+                }
+                else if (authorNotesBtn.ForeColor == Color.White)
+                {
+                    authorNotesBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    authorNotesBtn.ForeColor = Color.Black;
+                    FilterNotes("All");
+                }
+            };
+
+            searchPanel.Controls.Add(authorNotesBtn);
+
 
             Panel rightPanel = new Panel
             {
@@ -179,31 +232,33 @@ namespace NoteApp
                 Text = "Edit Profile",
                 Width = 100,
                 Height = 30,
-                Location = new Point(0, 5),
-                BackColor = Color.FromArgb(52, 152, 219),
-                ForeColor = Color.White,
+                Location = new Point(10, 5),
+                //BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            editProfileButton.FlatAppearance.BorderSize = 0;
+            editProfileButton.FlatAppearance.BorderSize = 1;
+            editProfileButton.FlatAppearance.BorderColor = Color.Black;
             editProfileButton.Click += (s, e) => EditProfile();
 
             // Create Note Button
             Button createNoteButton = new Button
             {
                 Text = "Create Note",
-                Width = 120,
+                Width = 110,
                 Height = 30,
-                Location = new Point(120, 5),
-                BackColor = Color.FromArgb(40, 167, 69),
-                ForeColor = Color.White,
+                Location = new Point(130, 5),
+                BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
 
-            createNoteButton.FlatAppearance.BorderSize = 0;
+            createNoteButton.FlatAppearance.BorderSize = 1;
+            createNoteButton.FlatAppearance.BorderColor = Color.Black;
             createNoteButton.Click += (s, e) => CreateNote();
 
             // Logout Button
@@ -216,16 +271,112 @@ namespace NoteApp
                 BackColor = Color.FromArgb(220, 53, 69),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 9),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            logoutButton.FlatAppearance.BorderSize = 0;
+            logoutButton.FlatAppearance.BorderSize = 1;
+            logoutButton.FlatAppearance.BorderColor = Color.Black;
             logoutButton.Click += (s, e) => Logout();
 
             rightPanel.Controls.Add(editProfileButton);
             rightPanel.Controls.Add(createNoteButton);
             rightPanel.Controls.Add(logoutButton);
             this.Controls.Add(rightPanel);
+
+            if (UserType == "User")
+            {
+                createNoteButton.Visible = true;
+                editProfileButton.Visible = true;
+            }
+            else if (UserType == "Admin")
+            {
+                createNoteButton.Visible = false;
+                editProfileButton.Visible = false;
+            }
+
+
+            // Approve filter Button
+            Button approveFilterBtn = new Button
+            {
+                Text = "Approved",
+                Width = 100,
+                Height = 30,
+                Location = new Point(0, 5),
+                BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            approveFilterBtn.FlatAppearance.BorderSize = 1;
+            approveFilterBtn.FlatAppearance.BorderColor = Color.Black;
+            rightPanel.Controls.Add(approveFilterBtn);
+
+            // Disapprove filter Button
+            Button disapproveFilterBtn = new Button
+            {
+                Text = "Disapproved",
+                Width = 120,
+                Height = 30,
+                Location = new Point(120, 5),
+                BackColor = Color.FromArgb(242, 242, 242),
+                ForeColor = Color.Black,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                Cursor = Cursors.Hand
+            };
+            disapproveFilterBtn.FlatAppearance.BorderSize = 1;
+            disapproveFilterBtn.FlatAppearance.BorderColor = Color.Black;
+            rightPanel.Controls.Add(disapproveFilterBtn);
+
+
+            approveFilterBtn.Click += (s, e) =>
+            {
+                if (approveFilterBtn.ForeColor == Color.Black)
+                {
+                    disapproveFilterBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    disapproveFilterBtn.ForeColor = Color.Black;
+                    approveFilterBtn.BackColor = Color.Black;
+                    approveFilterBtn.ForeColor = Color.White;
+                    FilterNotes("Approved");
+                }
+                else if (approveFilterBtn.ForeColor == Color.White)
+                {
+                    approveFilterBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    approveFilterBtn.ForeColor = Color.Black;
+                    FilterNotes("All");
+                }
+            };
+
+            disapproveFilterBtn.Click += (s, e) =>
+            {
+                if (disapproveFilterBtn.ForeColor == Color.Black)
+                {
+                    approveFilterBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    approveFilterBtn.ForeColor = Color.Black;
+                    disapproveFilterBtn.BackColor = Color.Black;
+                    disapproveFilterBtn.ForeColor = Color.White;
+                    FilterNotes("Pending");
+                }
+                else if (disapproveFilterBtn.ForeColor == Color.White)
+                {
+                    disapproveFilterBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    disapproveFilterBtn.ForeColor = Color.Black;
+                    FilterNotes("All");
+                }
+            };
+
+            if (UserType == "User")
+            {
+                approveFilterBtn.Visible = false;
+                disapproveFilterBtn.Visible = false;
+            }
+            if (UserType == "Admin")
+            {
+                approveFilterBtn.Visible = true;
+                disapproveFilterBtn.Visible = true;
+            }
+
         }
 
         private void SetupNotesContainer()
@@ -237,8 +388,8 @@ namespace NoteApp
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 AutoScroll = true,
-                Padding = new Padding(20, 50, 20, 20),
-                BackColor = Color.FromArgb(245, 245, 245),
+                Padding = new Padding(100, 30, 20, 100),
+                BackColor = Color.Transparent,
                 Top = 70
             };
             this.Controls.Add(notesContainer);
@@ -246,23 +397,30 @@ namespace NoteApp
 
         private Panel CreateNoteCard(Note note)
         {
-            // Main card panel
+            // Scaling factor for the new size
+            float scaleFactor = 1.3f;
+
+            // Main card panel - increased size
             Panel card = new Panel
             {
-                Size = new Size(300, 200),
-                Margin = new Padding(10),
+                Size = new Size((int)(300 * scaleFactor), (int)(200 * scaleFactor)),
+                Margin = new Padding(20),
                 BackColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle
             };
 
-            // Title Label 
+            // Calculate card dimensions for easier positioning
+            int cardWidth = (int)(300 * scaleFactor);
+            int cardHeight = (int)(200 * scaleFactor);
+
+            // Title Label
             Label titleLabel = new Label
             {
                 Text = note.Title,
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = Color.FromArgb(51, 51, 51),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
+                ForeColor = Color.SlateBlue,
                 Location = new Point(15, 15),
-                Size = new Size(270, 25),
+                Size = new Size(cardWidth - 44, 30),
                 TextAlign = ContentAlignment.MiddleLeft
             };
 
@@ -270,116 +428,122 @@ namespace NoteApp
             string content = note.Content;
             Label contentLabel = new Label
             {
-                Text = content.Length > 100 ? content.Substring(0, 100) + "..." : content,
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.FromArgb(100, 100, 100),
-                Location = new Point(15, 45),
-                Size = new Size(270, 60),
-                TextAlign = ContentAlignment.TopLeft
+                Text = content.Length > 150 ? content.Substring(0, 150) + "..." : content,
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.Black,
+                Location = new Point(15, 50),
+                Size = new Size(cardWidth - 44, 90),
+                TextAlign = ContentAlignment.TopLeft,
             };
+
 
             // Author
             string author = note.AuthorID;
             Label authorLabel = new Label
             {
                 Text = author,
-                Font = new Font("Segoe UI", 9),
-                ForeColor = Color.FromArgb(100, 100, 100),
-                Location = new Point(15, 110),
-                Size = new Size(100, 30)
+                Font = new Font("Segoe UI", 12),
+                ForeColor = Color.Black,
+                Location = new Point(15, 155),
+                Size = new Size(cardWidth / 2 - 30, 25)
             };
 
             // Created date
             Label dateLabel = new Label
             {
                 Text = note.CreatedAt.ToString("MMM dd, yyyy"),
-                Font = new Font("Segoe UI", 8),
-                ForeColor = Color.FromArgb(150, 150, 150),
-                Location = new Point(15, 130),
-                Size = new Size(100, 20)
+                Font = new Font("Segoe UI", 10),
+                ForeColor = Color.Black,
+                Location = new Point(15, 180),
+                Size = new Size(150, 20)
             };
 
-            // Status
+            // Status - moved to visible position
             bool isApproved = note.Approved;
             Label statusLabel = new Label
             {
                 Text = isApproved ? "✓ Approved" : "⏳ Pending",
-                Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                ForeColor = isApproved ? Color.Green : Color.Orange,
-                Location = new Point(200, 160),
-                Size = new Size(80, 20),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                ForeColor = isApproved ? Color.Green : Color.Brown,
+                Location = new Point(cardWidth - 130, 215),
+                Size = new Size(120, 25),
                 TextAlign = ContentAlignment.MiddleRight
             };
 
-            // Tags
             string tags = note.Tag;
             Label tagLabel = new Label
             {
                 Text = $"Tags: {tags}",
-                Font = new Font("Segoe UI", 8, FontStyle.Italic),
-                ForeColor = Color.FromArgb(120, 120, 120),
-                Location = new Point(200, 130),
-                Size = new Size(80, 20),
+                Font = new Font("Segoe UI", 10, FontStyle.Italic),
+                ForeColor = Color.Black,
+                Location = new Point(cardWidth - 130, 180),
+                Size = new Size(120, 20),
                 TextAlign = ContentAlignment.MiddleRight
             };
-
+            if (!tags.Equals(""))
+            {
+                card.Controls.Add(tagLabel);
+            }
 
             // View button
             Button viewButton = new Button
             {
                 Text = "View",
-                Size = new Size(60, 30),
-                Location = new Point(15, 150),
-                BackColor = Color.FromArgb(0, 123, 255),
-                ForeColor = Color.White,
+                Size = new Size(80, 35),
+                Location = new Point(15, cardHeight - 50),
+                ForeColor = Color.Black,
+                BackColor = Color.FromArgb(242, 242, 242),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            viewButton.FlatAppearance.BorderSize = 0;
-            viewButton.Font = new Font("Segoe UI", 8);
+            viewButton.FlatAppearance.BorderSize = 1;
+            viewButton.FlatAppearance.BorderColor = Color.Black;
 
             // Edit button
             Button editButton = new Button
             {
                 Text = "Edit",
-                Size = new Size(60, 30),
-                Location = new Point(85, 150),
-                BackColor = Color.FromArgb(108, 117, 125),
-                ForeColor = Color.White,
+                Size = new Size(80, 35),
+                Location = new Point(112, cardHeight - 50),
+                ForeColor = Color.Black,
+                BackColor = Color.FromArgb(242, 242, 242),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            editButton.FlatAppearance.BorderSize = 0;
-            editButton.Font = new Font("Segoe UI", 8);
+            editButton.FlatAppearance.BorderSize = 1;
+            editButton.FlatAppearance.BorderColor = Color.Black;
 
             // Approve button
             Button approveButton = new Button
             {
                 Text = "Approve",
-                Size = new Size(60, 30),
-                Location = new Point(85, 150),
-                BackColor = Color.FromArgb(40, 167, 69),
-                ForeColor = Color.White,
+                Size = new Size(90, 35),
+                Location = new Point(112, cardHeight - 50),
+                ForeColor = Color.Black,
+                BackColor = Color.FromArgb(242, 242, 242),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            approveButton.FlatAppearance.BorderSize = 0;
-            approveButton.Font = new Font("Segoe UI", 8);
+            approveButton.FlatAppearance.BorderSize = 1;
+            approveButton.FlatAppearance.BorderColor = Color.Black;
 
             // Disapprove button
             Button disApproveButton = new Button
             {
                 Text = "Disapprove",
-                Size = new Size(75, 30),
-                Location = new Point(85, 150),
-                BackColor = Color.FromArgb(220, 53, 69),
-                ForeColor = Color.White,
+                Size = new Size(110, 35),
+                Location = new Point(112, cardHeight - 50),
+                ForeColor = Color.Black,
+                BackColor = Color.FromArgb(242, 242, 242),
                 FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand,
+                Font = new Font("Segoe UI", 10, FontStyle.Bold)
             };
-            disApproveButton.FlatAppearance.BorderSize = 0;
-            disApproveButton.Font = new Font("Segoe UI", 8);
-
+            disApproveButton.FlatAppearance.BorderSize = 1;
+            disApproveButton.FlatAppearance.BorderColor = Color.Black;
 
             int noteId = note.Id;
             viewButton.Click += (s, e) => ViewNote(note);
@@ -391,12 +555,10 @@ namespace NoteApp
             card.MouseEnter += (s, e) => card.BackColor = Color.FromArgb(248, 249, 250);
             card.MouseLeave += (s, e) => card.BackColor = Color.White;
 
-
             // Add controls
             card.Controls.AddRange(new Control[] {
-            titleLabel, contentLabel, dateLabel, statusLabel, viewButton, tagLabel, authorLabel
-
-        });
+        titleLabel, contentLabel, dateLabel, statusLabel, viewButton, authorLabel
+    });
 
             if (UserType == "User")
                 card.Controls.Add(editButton);
@@ -523,6 +685,34 @@ namespace NoteApp
             else
             {
                 MessageBox.Show("Failed to disapprove the note. Please try again.");
+            }
+        }
+
+        private void FilterNotes(string type = "All")
+        {
+            LoadNotes(GetAllNotesFromDB());
+
+            if (type == "Approved")
+            {
+                DataTable allNotes = GetAllNotesFromDB();
+                DataTable approvedNotes = allNotes.Select("Approved = 1").CopyToDataTable();
+                LoadNotes(approvedNotes);
+            }
+            else if (type == "Pending")
+            {
+                DataTable allNotes = GetAllNotesFromDB();
+                DataTable pendingNotes = allNotes.Select("Approved = 0").CopyToDataTable();
+                LoadNotes(pendingNotes);
+            }
+            else if (type == "AuthorNotes")
+            {
+                DataTable allNotes = GetAllNotesFromDB();
+                DataTable authorNotes = allNotes.Select($"AuthorID = {Convert.ToInt32(AuthorID)}").CopyToDataTable();
+                LoadNotes(authorNotes);
+            }
+            else
+            {
+                LoadNotes(GetAllNotesFromDB());
             }
         }
     }
