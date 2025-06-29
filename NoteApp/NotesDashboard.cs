@@ -19,8 +19,8 @@ namespace NoteApp
         private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\NoteApp.mdf;Integrated Security=True;Connect Timeout=30";
 
         private CreateNote createNoteForm;
-
         private ViewNote viewNoteForm;
+        private EditProfile editProfileForm;
 
         public NotesDashboard(string userType, string userId)
         {
@@ -633,6 +633,14 @@ namespace NoteApp
                 {
                     //pass
                 }
+                try
+                {
+                    editProfileForm.Close();
+                }
+                catch
+                {
+                    //pass
+                }
 
                 this.Close();
                 frmHomePage homePage = new frmHomePage();
@@ -642,7 +650,9 @@ namespace NoteApp
 
         private void EditProfile()
         {
-            MessageBox.Show("Edit Profile clicked.");
+            editProfileForm = new EditProfile(Convert.ToInt32(UserID), this);
+            editProfileForm.Show();
+
         }
 
         private void CreateNote()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Noteapp;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,9 +13,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
-namespace Noteapp
+namespace NoteApp
 {
-    public partial class frmRegistration : Form
+    public partial class EditProfile : Form
 
     {
         string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\NoteApp.mdf;Integrated Security=True;Connect Timeout=30";
@@ -30,10 +31,17 @@ namespace Noteapp
         private bool isEmailValid = false;
         private bool isNameValid = false;
 
+        private int UserID;
+        private NotesDashboard Dashboard;
 
-        public frmRegistration()
+        public EditProfile(int userId, NotesDashboard dashboard)
         {
             InitializeComponent();
+
+            this.UserID = userId;
+            this.Dashboard = dashboard;
+
+            this.Load += EditProfile_Load;
 
             btnConfirm = new Button();
             btnConfirm.Name = "btnConfirm";
@@ -56,10 +64,10 @@ namespace Noteapp
             UpdateButtonAppearance();
 
 
-            txtPassword.UseSystemPasswordChar = true;
-            checkBox1.Checked = false;
-            lblPassword.Text = "Must be at least 7 characters with uppercase, lowercase, number, and special character.";
-            lblPassword.Visible = false;
+            //txtPassword.UseSystemPasswordChar = true;
+            //checkBox1.Checked = false;
+            //lblPassword.Text = "Must be at least 7 characters with uppercase, lowercase, number, and special character.";
+            //lblPassword.Visible = false;
             lblEmail.Visible = false;
             lblUsername.Visible = false;
             lblName.Visible = false;
@@ -89,10 +97,31 @@ namespace Noteapp
         }
 
 
+        private void EditProfile_Load(object sender, EventArgs e)
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string query = "SELECT Name, Username, Email FROM [User] WHERE Id = @UserId";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserId", UserID);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            txtName.Text = reader["Name"].ToString();
+                            txtUsername.Text = reader["Username"].ToString();
+                            txtEmail.Text = reader["Email"].ToString();
+                        }
+                    }
+                }
+            }
+        }
 
         private void ValidateForm()
         {
-            btnConfirm.Enabled = isUsernameValid && isPasswordValid && isEmailValid && isNameValid;
+            btnConfirm.Enabled = isUsernameValid && isEmailValid && isNameValid;
             UpdateButtonAppearance();
         }
 
@@ -126,8 +155,35 @@ namespace Noteapp
                         lblUsername.Visible = true;
                         isUsernameValid = false;
                     }
+                    string query1 = "SELECT Id FROM [User] WHERE Username = @Username";
+                    SqlCommand cmd1 = new SqlCommand(query1, conn);
+                    cmd1.Parameters.AddWithValue("@Username", username);
+
+                    conn.Open();
+                    object result = cmd1.ExecuteScalar();
+                    conn.Close();
+
+                    if (result != null)
+                    {
+                        int foundUserId = Convert.ToInt32(result);
+                        if (foundUserId == UserID)
+                        {
+                            lblUsername.Text = "Username available";
+                            lblUsername.ForeColor = Color.Green;
+                            lblUsername.Visible = true;
+                            isUsernameValid = true;
+                        }
+                        else
+                        {
+                            lblUsername.Text = "Username exists";
+                            lblUsername.ForeColor = Color.Red;
+                            lblUsername.Visible = true;
+                            isUsernameValid = false;
+                        }
+                    }
                     else
                     {
+                        // Username does not exist in the database
                         lblUsername.Text = "Username available";
                         lblUsername.ForeColor = Color.Green;
                         lblUsername.Visible = true;
@@ -157,40 +213,40 @@ namespace Noteapp
             ValidateForm();
 
         }
-        private void txtPassword_TextChanged_1(object sender, EventArgs e)
-        {
-            string password = txtPassword.Text;
-            string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$";
-            lblPassword.Visible = true;
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                lblPassword.Visible = false;
-                isPasswordValid = false;
-            }
-            else if (Regex.IsMatch(password, pattern))
-            {
-                lblPassword.Text = "Strong password.";
-                lblPassword.ForeColor = Color.Green;
-                isPasswordValid = true;
-                lblPassword.Visible = true;
+        //private void txtPassword_TextChanged_1(object sender, EventArgs e)
+        //{
+        //    string password = txtPassword.Text;
+        //    string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{7,}$";
+        //    lblPassword.Visible = true;
+        //    if (string.IsNullOrWhiteSpace(password))
+        //    {
+        //        lblPassword.Visible = false;
+        //        isPasswordValid = false;
+        //    }
+        //    else if (Regex.IsMatch(password, pattern))
+        //    {
+        //        lblPassword.Text = "Strong password.";
+        //        lblPassword.ForeColor = Color.Green;
+        //        isPasswordValid = true;
+        //        lblPassword.Visible = true;
 
-            }
-            else
-            {
-                lblPassword.Text = "Must be at least 7 characters with uppercase,\nlowercase, number, and special character.";
-                lblPassword.ForeColor = Color.Red;
-                lblPassword.Visible = true;
-                isPasswordValid = false;
+        //    }
+        //    else
+        //    {
+        //        lblPassword.Text = "Must be at least 7 characters with uppercase,\nlowercase, number, and special character.";
+        //        lblPassword.ForeColor = Color.Red;
+        //        lblPassword.Visible = true;
+        //        isPasswordValid = false;
 
-            }
-            ValidateForm();
+        //    }
+        //    ValidateForm();
 
-        }
+        //}
 
-        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            txtPassword.UseSystemPasswordChar = !checkBox1.Checked;
-        }
+        //private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        //{
+        //    txtPassword.UseSystemPasswordChar = !checkBox1.Checked;
+        //}
 
 
 
@@ -213,28 +269,47 @@ namespace Noteapp
             }
             else
             {
-                // Check if email exists in database
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT COUNT(*) FROM [User] WHERE Email = @Email";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    // Check if the email belongs to the current user
+                    string queryUser = "SELECT COUNT(*) FROM [User] WHERE Email = @Email AND Id = @UserId";
+                    using (SqlCommand cmdUser = new SqlCommand(queryUser, conn))
                     {
-                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmdUser.Parameters.AddWithValue("@Email", email);
+                        cmdUser.Parameters.AddWithValue("@UserId", UserID);
                         conn.Open();
-                        int count = (int)cmd.ExecuteScalar();
+                        int userCount = (int)cmdUser.ExecuteScalar();
                         conn.Close();
 
-                        if (count > 0)
-                        {
-                            lblEmail.Text = "Email already exists.";
-                            lblEmail.ForeColor = Color.Red;
-                            lblEmail.Visible = true;
-                            isEmailValid = false;
-                        }
-                        else
+                        if (userCount > 0)
                         {
                             lblEmail.Visible = false;
                             isEmailValid = true;
+                        }
+                        else
+                        {
+                            // Check if email exists for any other user
+                            string query = "SELECT COUNT(*) FROM [User] WHERE Email = @Email";
+                            using (SqlCommand cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@Email", email);
+                                conn.Open();
+                                int count = (int)cmd.ExecuteScalar();
+                                conn.Close();
+
+                                if (count > 0)
+                                {
+                                    lblEmail.Text = "Email already exists.";
+                                    lblEmail.ForeColor = Color.Red;
+                                    lblEmail.Visible = true;
+                                    isEmailValid = false;
+                                }
+                                else
+                                {
+                                    lblEmail.Visible = false;
+                                    isEmailValid = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -276,7 +351,7 @@ namespace Noteapp
 
         private void btnConfirm_Click(object sender, EventArgs e)
         {
-            if (!isUsernameValid || !isPasswordValid || !isEmailValid || !isNameValid)
+            if (!isUsernameValid || !isEmailValid || !isNameValid)
             {
                 MessageBox.Show("Please fill all fields correctly before submitting.");
                 return;
@@ -286,13 +361,13 @@ namespace Noteapp
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    string query = "INSERT INTO [User] (Name, Username, Password, Email) VALUES (@Name, @Username, @Password, @Email)";
+                    string query = "UPDATE [User] SET Name = @Name, Username = @Username, Email = @Email WHERE Id = @UserId";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Name", txtName.Text.Trim());
                         cmd.Parameters.AddWithValue("@Username", txtUsername.Text.Trim());
-                        cmd.Parameters.AddWithValue("@Password", txtPassword.Text);
                         cmd.Parameters.AddWithValue("@Email", txtEmail.Text.Trim());
+                        cmd.Parameters.AddWithValue("@UserId", UserID);
 
                         conn.Open();
                         int rowsAffected = cmd.ExecuteNonQuery();
@@ -300,15 +375,13 @@ namespace Noteapp
 
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Account created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            txtName.Clear();
-                            txtUsername.Clear();
-                            txtPassword.Clear();
-                            txtEmail.Clear();
+                            MessageBox.Show("Profile changed successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            this.Close();
+                            Dashboard.LoadNotes(Dashboard.GetAllNotesFromDB());
                         }
                         else
                         {
-                            MessageBox.Show("Account creation failed. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Profile change failed. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }

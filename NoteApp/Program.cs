@@ -22,6 +22,7 @@ namespace NoteApp
             //Application.Run(new ViewNote(1001, "User", 1001));
             //Application.Run(new CreateNote(1001));
             Application.Run(new frmHomePage());
+            //Application.Run(new EditProfile(1001));
 
 
         }
