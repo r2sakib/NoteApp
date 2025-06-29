@@ -18,6 +18,7 @@ namespace NoteApp
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new NotesPage());
             Application.Run(new NotesDashboard("Admin", "1001"));
+            //Application.Run(new ViewNote(1001, "user", 1002));
 
         }
     }

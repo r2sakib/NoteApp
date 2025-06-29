@@ -76,11 +76,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NoteAppDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Entity\NoteService.cs" />
+    <Compile Include="Entity\Note_F.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
+    <Compile Include="ViewNote.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ViewNote.Designer.cs">
+      <DependentUpon>ViewNote.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="NotesDashboard.resx">
       <DependentUpon>NotesDashboard.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,6 +98,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="ViewNote.resx">
+      <DependentUpon>ViewNote.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="NoteAppDataSet.xsc">
       <DependentUpon>NoteAppDataSet.xsd</DependentUpon>
     </None>

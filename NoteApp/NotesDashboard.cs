@@ -21,14 +21,17 @@ namespace NoteApp
             AuthorID = authorId;
 
             this.Size = new Size(1200, 800);
+            this.DoubleBuffered = true;
 
             string bgPath = Path.Combine(Application.StartupPath, "Resources", "background.png");
-            //if (File.Exists(bgPath))
-            //{
-            //    this.BackgroundImage = Image.FromFile(bgPath);
-            //    this.BackgroundImageLayout = ImageLayout.Stretch;
-            //}
-                this.BackColor = Color.FromArgb(242, 242, 242);
+            if (File.Exists(bgPath))
+            {
+                this.BackgroundImage = Image.FromFile(bgPath);
+                this.BackgroundImageLayout = ImageLayout.Stretch;
+            }
+
+            //this.BackColor = Color.FromArgb(242, 242, 242);
+            this.Text = "Notes Dashboard";
 
             //InitializeComponent();
             SetupNotesContainer();
@@ -36,6 +39,18 @@ namespace NoteApp
             LoadNotes(GetAllNotesFromDB());
             SearchNotes("");
             FilterNotes();
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            if (this.BackgroundImage != null)
+            {
+                e.Graphics.DrawImage(this.BackgroundImage, this.ClientRectangle);
+            }
+            else
+            {
+                base.OnPaintBackground(e);
+            }
         }
 
         private DataTable GetAllNotesFromDB()
@@ -89,14 +104,14 @@ namespace NoteApp
         private void SetupHeader()
         {
             Color headerButtonColor = Color.White;
-            int headerButtonBorder = 1;
+            int headerButtonBorder = 0;
 
             // Title label
             Label titleLabel = new Label
             {
                 Text = "Notes Dashboard",
-                Font = new Font("Franklin Gothic Demi", 22, FontStyle.Bold),
-                ForeColor = Color.DarkBlue,
+                Font = new Font("Franklin Gothic Demi", 26, FontStyle.Bold),
+                ForeColor = Color.White,
                 BackColor = Color.Transparent,
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleLeft,
@@ -195,7 +210,7 @@ namespace NoteApp
                 Location = new Point(0, 5),
                 BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -256,7 +271,7 @@ namespace NoteApp
                 Location = new Point(130, 5),
                 BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -308,7 +323,7 @@ namespace NoteApp
                 Location = new Point(0, 5),
                 BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -325,7 +340,7 @@ namespace NoteApp
                 Location = new Point(120, 5),
                 BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -392,7 +407,7 @@ namespace NoteApp
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = true,
                 AutoScroll = true,
-                Padding = new Padding(100, 30, 20, 100),
+                Padding = new Padding(125, 30, 20, 100),
                 BackColor = Color.Transparent,
                 Top = 70
             };
@@ -673,12 +688,12 @@ namespace NoteApp
 
             if (response)
             {
-                MessageBox.Show($"Note with ID: {note.Id} has been approved.");
+                MessageBox.Show($"Note with ID: {note.Id} has been approved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadNotes(GetAllNotesFromDB());
             }
             else
             {
-                MessageBox.Show("Failed to approve the note. Please try again.");
+                MessageBox.Show("Failed to approve the note. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -688,12 +703,12 @@ namespace NoteApp
 
             if (response)
             {
-                MessageBox.Show($"Note with ID: {note.Id} has been disapproved.");
+                MessageBox.Show($"Note with ID: {note.Id} has been disapproved.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 LoadNotes(GetAllNotesFromDB());
             }
             else
             {
-                MessageBox.Show("Failed to disapprove the note. Please try again.");
+                MessageBox.Show("Failed to disapprove the note. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -724,9 +739,22 @@ namespace NoteApp
                 LoadNotes(GetAllNotesFromDB());
             }
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // NotesDashboard
+            // 
+            this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Name = "NotesDashboard";
+            this.Text = "Notes Dashboard";
+            this.ResumeLayout(false);
+
+        }
     }
-        // Custom Panel class for border
-        public class BorderedPanel : Panel
+    // Custom Panel class for border
+    public class BorderedPanel : Panel
         {
             public Color BorderColor { get; set; } = Color.Black;
             public int BorderThickness { get; set; } = 2;

@@ -1,6 +1,6 @@
 ﻿namespace NoteApp
 {
-    partial class Form1
+    partial class ViewNote
     {
         /// <summary>
         /// Required designer variable.
@@ -20,20 +20,16 @@
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            this.components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
-        }
-
-        #endregion
+        private System.Windows.Forms.Button btnDisapprove;
+        private System.Windows.Forms.Label uploadedBy;
+        private System.Windows.Forms.Label tags;
+        private System.Windows.Forms.TextBox content;
+        private System.Windows.Forms.Label title;
+        private System.Windows.Forms.Label modifiedAt;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label status;
     }
 }
+
