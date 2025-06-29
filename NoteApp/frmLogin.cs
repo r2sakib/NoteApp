@@ -149,6 +149,7 @@ namespace Noteapp
                                     if (password == dbPassword)
                                     {
                                         MessageBox.Show("Login successful", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        this.Close();
                                         NotesDashboard dashboard = new NotesDashboard("User", userId);
                                         this.Hide();
                                         dashboard.Show();

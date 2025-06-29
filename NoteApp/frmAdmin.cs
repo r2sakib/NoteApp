@@ -153,6 +153,7 @@ namespace Noteapp
                                     if (password == dbPassword)
                                     {
                                         MessageBox.Show("Admin login successful", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                        this.Close();
                                         NotesDashboard dashboard = new NotesDashboard("Admin", userId);
                                         dashboard.Show();
                                     }
@@ -172,7 +173,6 @@ namespace Noteapp
                 catch
                 {
                     MessageBox.Show("Login failed", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
                 }
             }
         }

@@ -24,6 +24,7 @@ namespace NoteApp
 
         public NotesDashboard(string userType, string userId)
         {
+            InitializeComponent();
 
             UserType = userType;
             UserID = userId;
@@ -32,6 +33,7 @@ namespace NoteApp
             this.DoubleBuffered = true;
 
             string bgPath = Path.Combine(Application.StartupPath, "Resources", "background.png");
+            string iconPath = Path.Combine(Application.StartupPath, "Resources", "Logo.ico");
             if (File.Exists(bgPath))
             {
                 this.BackgroundImage = Image.FromFile(bgPath);
@@ -42,7 +44,6 @@ namespace NoteApp
             this.Text = "Notes Dashboard";
             this.WindowState = FormWindowState.Maximized;
 
-            //InitializeComponent();
             SetupNotesContainer();
             SetupHeader();
             LoadNotes(GetAllNotesFromDB());
@@ -634,7 +635,8 @@ namespace NoteApp
                 }
 
                 this.Close();
-                new frmHomePage();
+                frmHomePage homePage = new frmHomePage();
+                homePage.Show();
             }
         }
 
