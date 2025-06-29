@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Noteapp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,8 +18,11 @@ namespace NoteApp
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new NotesPage());
-            Application.Run(new NotesDashboard("Admin", "1001"));
-            //Application.Run(new ViewNote(1001, "user", 1002));
+            //Application.Run(new NotesDashboard("User", "1001"));
+            //Application.Run(new ViewNote(1001, "User", 1001));
+            //Application.Run(new CreateNote(1001));
+            Application.Run(new frmHomePage());
+
 
         }
     }

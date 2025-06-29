@@ -15,16 +15,19 @@ namespace NoteApp
         private int noteId;
         private string userType;
         private int userId;
-        public ViewNote(int noteId, string userType, int userId)
+        private NotesDashboard Dashboard;
+        public ViewNote(int noteId, string userType, int userId, NotesDashboard dashboard)
         {
             InitializeComponent();
             this.noteId = noteId;
             this.userType = userType;
             this.userId = userId;
+            this.Dashboard = dashboard;
         }
 
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ViewNote));
             this.btnDisapprove = new System.Windows.Forms.Button();
             this.uploadedBy = new System.Windows.Forms.Label();
             this.tags = new System.Windows.Forms.Label();
@@ -35,6 +38,8 @@ namespace NoteApp
             this.btnEdit = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.status = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.btnDelete = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -42,9 +47,10 @@ namespace NoteApp
             // 
             this.btnDisapprove.BackColor = System.Drawing.Color.Crimson;
             this.btnDisapprove.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnDisapprove.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDisapprove.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDisapprove.Font = new System.Drawing.Font("Dubai", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDisapprove.ForeColor = System.Drawing.Color.White;
-            this.btnDisapprove.Location = new System.Drawing.Point(745, 542);
+            this.btnDisapprove.Location = new System.Drawing.Point(762, 570);
             this.btnDisapprove.Margin = new System.Windows.Forms.Padding(0);
             this.btnDisapprove.Name = "btnDisapprove";
             this.btnDisapprove.Size = new System.Drawing.Size(131, 38);
@@ -57,22 +63,22 @@ namespace NoteApp
             // uploadedBy
             // 
             this.uploadedBy.AutoSize = true;
-            this.uploadedBy.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.uploadedBy.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold);
             this.uploadedBy.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.uploadedBy.Location = new System.Drawing.Point(32, 475);
+            this.uploadedBy.Location = new System.Drawing.Point(47, 488);
             this.uploadedBy.Name = "uploadedBy";
-            this.uploadedBy.Size = new System.Drawing.Size(116, 23);
+            this.uploadedBy.Size = new System.Drawing.Size(107, 27);
             this.uploadedBy.TabIndex = 8;
             this.uploadedBy.Text = "Uploaded by: ";
             // 
             // tags
             // 
             this.tags.AutoSize = true;
-            this.tags.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.tags.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold);
             this.tags.ForeColor = System.Drawing.Color.DarkBlue;
-            this.tags.Location = new System.Drawing.Point(32, 443);
+            this.tags.Location = new System.Drawing.Point(47, 460);
             this.tags.Name = "tags";
-            this.tags.Size = new System.Drawing.Size(52, 23);
+            this.tags.Size = new System.Drawing.Size(51, 27);
             this.tags.TabIndex = 7;
             this.tags.Text = "Tags: ";
             this.tags.Click += new System.EventHandler(this.tags_Click);
@@ -84,7 +90,7 @@ namespace NoteApp
             this.content.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.content.Cursor = System.Windows.Forms.Cursors.Default;
             this.content.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.content.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.content.Font = new System.Drawing.Font("Segoe UI", 12F);
             this.content.ForeColor = System.Drawing.Color.Black;
             this.content.Location = new System.Drawing.Point(10, 10);
             this.content.Multiline = true;
@@ -101,34 +107,34 @@ namespace NoteApp
             // 
             this.title.AutoSize = true;
             this.title.BackColor = System.Drawing.Color.Transparent;
-            this.title.Font = new System.Drawing.Font("Dubai", 16F, System.Drawing.FontStyle.Bold);
+            this.title.Font = new System.Drawing.Font("Franklin Gothic Demi", 18F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.title.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.title.Location = new System.Drawing.Point(28, 23);
+            this.title.Location = new System.Drawing.Point(46, 54);
             this.title.Name = "title";
-            this.title.Size = new System.Drawing.Size(73, 45);
+            this.title.Size = new System.Drawing.Size(59, 30);
             this.title.TabIndex = 5;
             this.title.Text = "Title";
             // 
             // modifiedAt
             // 
             this.modifiedAt.AutoSize = true;
-            this.modifiedAt.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.modifiedAt.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold);
             this.modifiedAt.ForeColor = System.Drawing.Color.MidnightBlue;
-            this.modifiedAt.Location = new System.Drawing.Point(34, 506);
+            this.modifiedAt.Location = new System.Drawing.Point(47, 516);
             this.modifiedAt.Name = "modifiedAt";
-            this.modifiedAt.Size = new System.Drawing.Size(106, 23);
+            this.modifiedAt.Size = new System.Drawing.Size(98, 27);
             this.modifiedAt.TabIndex = 10;
             this.modifiedAt.Text = "Modified at: ";
             // 
             // btnSave
             // 
-            this.btnSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(123)))), ((int)(((byte)(254)))));
+            this.btnSave.BackColor = System.Drawing.Color.DarkGray;
             this.btnSave.Cursor = System.Windows.Forms.Cursors.Hand;
             this.btnSave.Enabled = false;
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnSave.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSave.Font = new System.Drawing.Font("Dubai", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnSave.ForeColor = System.Drawing.Color.White;
-            this.btnSave.Location = new System.Drawing.Point(745, 490);
+            this.btnSave.Location = new System.Drawing.Point(762, 523);
             this.btnSave.Margin = new System.Windows.Forms.Padding(0);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(131, 38);
@@ -139,12 +145,12 @@ namespace NoteApp
             // 
             // btnEdit
             // 
-            this.btnEdit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(1)))), ((int)(((byte)(123)))), ((int)(((byte)(254)))));
+            this.btnEdit.BackColor = System.Drawing.Color.RoyalBlue;
             this.btnEdit.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.btnEdit.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnEdit.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEdit.Font = new System.Drawing.Font("Dubai", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnEdit.ForeColor = System.Drawing.Color.White;
-            this.btnEdit.Location = new System.Drawing.Point(745, 446);
+            this.btnEdit.Location = new System.Drawing.Point(762, 476);
             this.btnEdit.Margin = new System.Windows.Forms.Padding(0);
             this.btnEdit.Name = "btnEdit";
             this.btnEdit.Size = new System.Drawing.Size(131, 38);
@@ -158,7 +164,7 @@ namespace NoteApp
             this.panel1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.content);
-            this.panel1.Location = new System.Drawing.Point(36, 71);
+            this.panel1.Location = new System.Drawing.Point(53, 95);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(10);
             this.panel1.Size = new System.Drawing.Size(840, 357);
@@ -167,19 +173,51 @@ namespace NoteApp
             // status
             // 
             this.status.AutoSize = true;
-            this.status.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold);
+            this.status.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold);
             this.status.ForeColor = System.Drawing.Color.DarkGreen;
-            this.status.Location = new System.Drawing.Point(32, 548);
+            this.status.Location = new System.Drawing.Point(116, 543);
             this.status.Name = "status";
-            this.status.Size = new System.Drawing.Size(104, 20);
+            this.status.Size = new System.Drawing.Size(81, 27);
             this.status.TabIndex = 14;
-            this.status.Text = "✓ Approved";
+            this.status.Text = "Approved";
             this.status.Click += new System.EventHandler(this.status_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.MidnightBlue;
+            this.label1.Location = new System.Drawing.Point(47, 543);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(60, 27);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Status:";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.BackColor = System.Drawing.Color.Crimson;
+            this.btnDelete.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDelete.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDelete.Font = new System.Drawing.Font("Dubai", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnDelete.ForeColor = System.Drawing.Color.White;
+            this.btnDelete.Location = new System.Drawing.Point(762, 570);
+            this.btnDelete.Margin = new System.Windows.Forms.Padding(0);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(131, 38);
+            this.btnDelete.TabIndex = 16;
+            this.btnDelete.Text = "Delete";
+            this.btnDelete.UseVisualStyleBackColor = false;
+            this.btnDelete.Visible = false;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // ViewNote
             // 
             this.AccessibleName = "";
-            this.ClientSize = new System.Drawing.Size(953, 608);
+            this.BackgroundImage = global::NoteApp.Properties.Resources.View_Create_bg;
+            this.ClientSize = new System.Drawing.Size(944, 661);
+            this.Controls.Add(this.btnDelete);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.status);
             this.Controls.Add(this.btnEdit);
             this.Controls.Add(this.btnSave);
@@ -189,6 +227,7 @@ namespace NoteApp
             this.Controls.Add(this.tags);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.title);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ViewNote";
             this.Text = "View Note";
             this.Load += new System.EventHandler(this.ViewNoteForm_Load);
@@ -204,26 +243,31 @@ namespace NoteApp
             NoteService noteService = new NoteService();
             Note_F note = noteService.GetNoteById(noteId);
 
+            string AuthorName = noteService.getAuthorName(note.AuthorID);
             if (note != null)
             {
-                if (userType == "user" && note.AuthorID == userId)
+                if (userType == "User" && note.AuthorID == userId)
                 {
                     btnEdit.Enabled = true;
+                    btnDelete.Visible = true;
                 }
                 else
                 {
                     btnEdit.Enabled = false;
+                    btnEdit.BackColor = Color.DarkGray;
+                    btnDelete.Visible = false;
                 }
 
                     title.Text = note.Title;
                 content.Text = note.Content;
                 tags.Text = "Tags: " + note.Tags;
-                uploadedBy.Text = "Uploaded By: " + note.AuthorID;
+                uploadedBy.Text = "Uploaded By: " + AuthorName;
                 modifiedAt.Text = "Modified At: " + note.ModifiedDate.ToString();
 
-                if (userType.ToLower() == "admin")
+                if (userType == "Admin")
                 {
                     btnDisapprove.Visible = true;
+                    btnDelete.Visible = false;
 
                     if (note.Approved)
                     {
@@ -231,15 +275,15 @@ namespace NoteApp
                         btnDisapprove.Text = "Disapprove";
                         btnDisapprove.BackColor = Color.Red;
                         btnDisapprove.ForeColor = Color.White;
-                        status.Text = "✓ Approved";
+                        status.Text = "Approved";
                         status.ForeColor = System.Drawing.ColorTranslator.FromHtml("#2FA442");
                     }
                     else
                     {
                         btnDisapprove.Text = "Approve";
-                        btnDisapprove.BackColor = System.Drawing.ColorTranslator.FromHtml("#2FA442");
+                        btnDisapprove.BackColor = Color.Green;
                         btnDisapprove.ForeColor = Color.White;
-                        status.Text = "⏳ Pending";
+                        status.Text = "Pending";
                         status.ForeColor = System.Drawing.ColorTranslator.FromHtml("#FFA400");
                     }
                 }
@@ -250,12 +294,12 @@ namespace NoteApp
 
                     if (note.Approved)
                     {
-                        status.Text = "✓ Approved";
-                        status.ForeColor = System.Drawing.ColorTranslator.FromHtml("#2FA442");
+                        status.Text = "Approved";
+                        status.ForeColor = Color.Green;
                     }
                     else
                     {
-                        status.Text = "⏳ Pending";
+                        status.Text = "Pending";
                         status.ForeColor = System.Drawing.ColorTranslator.FromHtml("#FFA400");
                     }
                 }
@@ -280,7 +324,8 @@ namespace NoteApp
                     success = noteService.DisapproveNote(noteId);
                     if (success)
                     {
-                        MessageBox.Show("Note Disapproved Successfully.");
+                        MessageBox.Show("Note Disapproved Successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Dashboard.LoadNotes(Dashboard.GetAllNotesFromDB());
                     }
                 }
                 else
@@ -288,7 +333,8 @@ namespace NoteApp
                     success = noteService.ApproveNote(noteId);
                     if (success)
                     {
-                        MessageBox.Show("Note Approved Successfully.");
+                        MessageBox.Show("Note Approved Successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        Dashboard.LoadNotes(Dashboard.GetAllNotesFromDB());
                     }
                 }
 
@@ -298,7 +344,7 @@ namespace NoteApp
                 }
                 else
                 {
-                    MessageBox.Show("Failed to update note status.");
+                    MessageBox.Show("Failed to update note status.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -308,7 +354,9 @@ namespace NoteApp
         {
             content.ReadOnly = false;
             btnSave.Enabled = true;
+            btnSave.BackColor = Color.RoyalBlue;
             btnEdit.Enabled = false;
+            btnEdit.BackColor = Color.DarkGray;
         }
 
 
@@ -319,15 +367,18 @@ namespace NoteApp
 
             if (isUpdated)
             {
-                MessageBox.Show("Note updated successfully.");
+                MessageBox.Show("Note updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Dashboard.LoadNotes(Dashboard.GetAllNotesFromDB());
 
                 content.ReadOnly = true;
                 btnSave.Enabled = false;
+                btnSave.BackColor = Color.DarkGray;
                 btnEdit.Enabled = true;
+                btnEdit.BackColor = Color.RoyalBlue;
             }
             else
             {
-                MessageBox.Show("Failed to update the note.");
+                MessageBox.Show("Failed to update the note.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -349,6 +400,28 @@ namespace NoteApp
         private void tags_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            NoteService noteService = new NoteService();
+            bool success = noteService.DeleteNote(noteId);
+
+            if (success)
+            {
+                MessageBox.Show("Note deleted successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+                Dashboard.LoadNotes(Dashboard.GetAllNotesFromDB());
+            }
+            else
+            {
+                MessageBox.Show("Failed to delete the note.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

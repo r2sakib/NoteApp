@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Noteapp;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -11,14 +12,21 @@ namespace NoteApp
     {
 
         private string UserType { get; set; }
-        private string AuthorID { get; set; }
+        private string UserID { get; set; }
 
         private FlowLayoutPanel notesContainer;
 
-        public NotesDashboard(string userType, string authorId)
+        private string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\NoteApp.mdf;Integrated Security=True;Connect Timeout=30";
+
+        private CreateNote createNoteForm;
+
+        private ViewNote viewNoteForm;
+
+        public NotesDashboard(string userType, string userId)
         {
+
             UserType = userType;
-            AuthorID = authorId;
+            UserID = userId;
 
             this.Size = new Size(1200, 800);
             this.DoubleBuffered = true;
@@ -32,6 +40,7 @@ namespace NoteApp
 
             //this.BackColor = Color.FromArgb(242, 242, 242);
             this.Text = "Notes Dashboard";
+            this.WindowState = FormWindowState.Maximized;
 
             //InitializeComponent();
             SetupNotesContainer();
@@ -53,36 +62,40 @@ namespace NoteApp
             }
         }
 
-        private DataTable GetAllNotesFromDB()
+        public DataTable GetAllNotesFromDB()
         {
-            string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=|DataDirectory|\NoteApp.mdf;Integrated Security=True;Connect Timeout=30";
-
             string query;
             if (UserType == "Admin")
             {
                 query = @"SELECT NoteID, Title, Content, CreatedDate, ModifiedDate, Approved, Tags, AuthorID 
-                        FROM [dbo].[Notes] 
-                        ORDER BY CreatedDate DESC";
+                FROM [dbo].[Notes] 
+                ORDER BY CreatedDate DESC";
             }
             else
             {
                 query = @"SELECT NoteID, Title, Content, CreatedDate, ModifiedDate, Approved, Tags, AuthorID
-                        FROM [dbo].[Notes] 
-                        WHERE Approved = 1
-                        ORDER BY CreatedDate DESC";
+                FROM [dbo].[Notes] 
+                WHERE Approved = 1 OR AuthorID = @UserID
+                ORDER BY CreatedDate DESC";
             }
-
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                SqlDataAdapter adapter = new SqlDataAdapter(query, connection);
+                SqlCommand cmd = new SqlCommand(query, connection);
+
+                if (UserType != "Admin")
+                {
+                    cmd.Parameters.AddWithValue("@UserID", Convert.ToInt32(UserID));
+                }
+
+                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                 DataTable dt = new DataTable();
                 adapter.Fill(dt);
                 return dt;
             }
         }
 
-        private void LoadNotes(DataTable dt)
+        public void LoadNotes(DataTable dt)
         {
             try
             {
@@ -144,10 +157,6 @@ namespace NoteApp
                 Text = "Search notes",
             };
 
-
-            //searchBox.Multiline = true;
-            //searchBox.Padding = new Padding(20, 15, 8, 8);
-
             searchBox.GotFocus += (s, e) =>
             {
                 if (searchBox.Text == "Search notes")
@@ -201,8 +210,8 @@ namespace NoteApp
 
             this.Controls.Add(searchPanel);
 
-            // Author Notes filter Button
-            Button authorNotesBtn = new Button
+            // My Notes filter Button
+            Button myNotesFilterBtn = new Button
             {
                 Text = "My Notes",
                 Width = 100,
@@ -214,26 +223,26 @@ namespace NoteApp
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
-            authorNotesBtn.FlatAppearance.BorderSize = headerButtonBorder;
-            authorNotesBtn.FlatAppearance.BorderColor = Color.Black;
+            myNotesFilterBtn.FlatAppearance.BorderSize = headerButtonBorder;
+            myNotesFilterBtn.FlatAppearance.BorderColor = Color.Black;
 
-            authorNotesBtn.Click += (s, e) =>
+            myNotesFilterBtn.Click += (s, e) =>
             {
-                if (authorNotesBtn.ForeColor == Color.Black)
+                if (myNotesFilterBtn.ForeColor == Color.Black)
                 {
-                    authorNotesBtn.BackColor = Color.Black;
-                    authorNotesBtn.ForeColor = Color.White;
-                    FilterNotes("AuthorNotes");
+                    myNotesFilterBtn.BackColor = Color.Black;
+                    myNotesFilterBtn.ForeColor = Color.White;
+                    FilterNotes("UserNotes");
                 }
-                else if (authorNotesBtn.ForeColor == Color.White)
+                else if (myNotesFilterBtn.ForeColor == Color.White)
                 {
-                    authorNotesBtn.BackColor = Color.FromArgb(242, 242, 242);
-                    authorNotesBtn.ForeColor = Color.Black;
+                    myNotesFilterBtn.BackColor = Color.FromArgb(242, 242, 242);
+                    myNotesFilterBtn.ForeColor = Color.Black;
                     FilterNotes("All");
                 }
             };
 
-            searchPanel.Controls.Add(authorNotesBtn);
+            searchPanel.Controls.Add(myNotesFilterBtn);
 
 
             Panel rightPanel = new Panel
@@ -254,7 +263,7 @@ namespace NoteApp
                 Location = new Point(10, 5),
                 BackColor = headerButtonColor,
                 ForeColor = Color.Black,
-                FlatStyle = FlatStyle.Flat,
+                FlatStyle = FlatStyle.Standard,
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -461,15 +470,19 @@ namespace NoteApp
 
 
             // Author
-            string author = note.AuthorID;
+            string author = getAuthorName(Convert.ToInt32(note.AuthorID));
             Label authorLabel = new Label
             {
                 Text = author,
-                Font = new Font("Segoe UI", 12),
+                Font = new Font("Segoe UI", 12, FontStyle.Bold),
                 ForeColor = Color.Black,
                 Location = new Point(15, 155),
                 Size = new Size(cardWidth / 2 - 30, 25)
             };
+            if (UserID == note.AuthorID)
+            {
+                authorLabel.ForeColor = Color.MidnightBlue;
+            }
 
             // Created date
             Label dateLabel = new Label
@@ -529,19 +542,19 @@ namespace NoteApp
             //};
 
             // Edit button
-            Button editButton = new Button
-            {
-                Text = "Edit",
-                Size = new Size(80, 35),
-                Location = new Point(112, cardHeight - 50),
-                ForeColor = Color.Black,
-                BackColor = buttonColor,
-                FlatStyle = FlatStyle.System,
-                Cursor = Cursors.Hand,
-                Font = new Font("Segoe UI", 10, FontStyle.Bold)
-            };
-            editButton.FlatAppearance.BorderSize = buttonBorder;
-            editButton.FlatAppearance.BorderColor = Color.Black;
+            //Button editButton = new Button
+            //{
+            //    Text = "Edit",
+            //    Size = new Size(80, 35),
+            //    Location = new Point(112, cardHeight - 50),
+            //    ForeColor = Color.Black,
+            //    BackColor = buttonColor,
+            //    FlatStyle = FlatStyle.System,
+            //    Cursor = Cursors.Hand,
+            //    Font = new Font("Segoe UI", 10, FontStyle.Bold)
+            //};
+            //editButton.FlatAppearance.BorderSize = buttonBorder;
+            //editButton.FlatAppearance.BorderColor = Color.Black;
 
             // Approve button
             Button approveButton = new Button
@@ -575,7 +588,7 @@ namespace NoteApp
 
             int noteId = note.Id;
             viewButton.Click += (s, e) => ViewNote(note);
-            editButton.Click += (s, e) => EditNote(note);
+            //editButton.Click += (s, e) => EditNote(note);
             approveButton.Click += (s, e) => ApproveNote(note);
             disApproveButton.Click += (s, e) => DisapproveNote(note);
 
@@ -584,8 +597,8 @@ namespace NoteApp
         titleLabel, contentLabel, dateLabel, statusLabel, viewButton, authorLabel
     });
 
-            if (UserType == "User")
-                card.Controls.Add(editButton);
+            //if (UserType == "User")
+            //    card.Controls.Add(editButton);
 
             if (!isApproved && UserType == "Admin")
                 card.Controls.Add(approveButton);
@@ -603,8 +616,25 @@ namespace NoteApp
 
             if (result == DialogResult.Yes)
             {
+                try
+                {
+                    viewNoteForm.Close();
+                }
+                catch
+                {
+                    // pass
+                }
+                try
+                {
+                    createNoteForm.Close();
+                }
+                catch
+                {
+                    //pass
+                }
+
                 this.Close();
-                // new Login().Show();
+                new frmHomePage();
             }
         }
 
@@ -615,7 +645,8 @@ namespace NoteApp
 
         private void CreateNote()
         {
-            MessageBox.Show("Create Note clicked.");
+            createNoteForm = new CreateNote(Convert.ToInt32(UserID), this);
+            createNoteForm.Show();
         }
 
         private DataTable SearchNotesFromDB(string searchQuery)
@@ -674,7 +705,8 @@ namespace NoteApp
 
         private void ViewNote(Note note)
         {
-            MessageBox.Show($"View note with ID: {note.Id}");
+            viewNoteForm = new ViewNote(note.Id, UserType, Convert.ToInt32(UserID), this);
+            viewNoteForm.Show();
         }
 
         private void EditNote(Note note)
@@ -728,10 +760,10 @@ namespace NoteApp
                 DataTable pendingNotes = allNotes.Select("Approved = 0").CopyToDataTable();
                 LoadNotes(pendingNotes);
             }
-            else if (type == "AuthorNotes")
+            else if (type == "UserNotes")
             {
                 DataTable allNotes = GetAllNotesFromDB();
-                DataTable authorNotes = allNotes.Select($"AuthorID = {Convert.ToInt32(AuthorID)}").CopyToDataTable();
+                DataTable authorNotes = allNotes.Select($"AuthorID = {Convert.ToInt32(UserID)}").CopyToDataTable();
                 LoadNotes(authorNotes);
             }
             else
@@ -740,13 +772,43 @@ namespace NoteApp
             }
         }
 
+        public string getAuthorName(int authorId)
+        {
+            string authorName = null;
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT Name FROM [User] WHERE Id = @UserID";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UserID", authorId);
+                        object result = cmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            authorName = result.ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+            return authorName;
+
+        }
+
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NotesDashboard));
             this.SuspendLayout();
             // 
             // NotesDashboard
             // 
             this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "NotesDashboard";
             this.Text = "Notes Dashboard";
             this.ResumeLayout(false);

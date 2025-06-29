@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NoteApp;
+using System;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 
@@ -135,6 +136,55 @@ public class NoteService
         return success;
     }
 
+    public bool DeleteNote(int noteId)
+    {
+        bool success = false;
+        try
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM Notes WHERE NoteID = @NoteID";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@NoteID", noteId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    success = rowsAffected > 0;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message);
+        }
+        return success;
+    }
 
+    public string getAuthorName(int authorId)
+    {
+        string authorName = null;
+        try
+        {
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT Name FROM [User] WHERE Id = @UserID";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@UserID", authorId);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        authorName = result.ToString();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("Error: " + ex.Message);
+        }
+        return authorName;
 
+    }
 }
