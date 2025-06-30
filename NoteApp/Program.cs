@@ -16,7 +16,7 @@ namespace NoteApp
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(true);
             //Application.Run(new NotesPage());
             //Application.Run(new NotesDashboard("User", "1001"));
             //Application.Run(new ViewNote(1001, "User", 1001));

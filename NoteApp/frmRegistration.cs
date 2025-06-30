@@ -64,6 +64,8 @@ namespace Noteapp
             lblUsername.Visible = false;
             lblName.Visible = false;
             btnConfirm.Enabled = false;
+
+            this.AcceptButton = btnConfirm;
         }
 
         private void btn_MouseEnter(object sender, EventArgs e)
@@ -301,10 +303,9 @@ namespace Noteapp
                         if (rowsAffected > 0)
                         {
                             MessageBox.Show("Account created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            txtName.Clear();
-                            txtUsername.Clear();
-                            txtPassword.Clear();
-                            txtEmail.Clear();
+                            this.Close();
+                            frmLogin frmLogin = new frmLogin();
+                            frmLogin.Show();
                         }
                         else
                         {

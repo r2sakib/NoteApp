@@ -30,9 +30,24 @@ namespace Noteapp
             lblUsername.Visible = false;
             btnConfirm.MouseEnter += btn_MouseEnter;
             btnConfirm.MouseLeave += btn_MouseLeave;
+            this.Load += EditProfile_Load;
+            this.UserType = userType;
 
-            label1.Text = "Admin Reset Password";
+            this.AcceptButton = btnConfirm;
         }
+
+        private void EditProfile_Load(object sender, EventArgs e)
+        {
+            if (UserType == "User")
+            {
+                label1.Text = "Reset Password";
+            }
+            else if (UserType == "Admin")
+            {
+                label1.Text = "Admin Reset Password";
+            }
+        }
+
 
         private void btn_MouseEnter(object sender, EventArgs e)
         {

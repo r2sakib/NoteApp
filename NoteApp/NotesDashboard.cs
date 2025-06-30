@@ -41,7 +41,7 @@ namespace NoteApp
             }
 
             //this.BackColor = Color.FromArgb(242, 242, 242);
-            this.Text = "Notes Dashboard";
+                
             this.WindowState = FormWindowState.Maximized;
 
             SetupNotesContainer();
@@ -124,7 +124,7 @@ namespace NoteApp
             Label titleLabel = new Label
             {
                 Text = "Notes Dashboard",
-                Font = new Font("Franklin Gothic Demi", 26, FontStyle.Bold),
+                Font = new Font("Franklin Gothic Demi", 22, FontStyle.Bold),
                 ForeColor = Color.White,
                 BackColor = Color.Transparent,
                 AutoSize = false,
@@ -136,13 +136,22 @@ namespace NoteApp
             titleLabel.AutoSize = true;
             this.Controls.Add(titleLabel);
 
+            if (UserType == "Admin")
+            {
+                titleLabel.Text = "Dashboard - Admin";
+            }
+            else
+            {
+                string authorName = getAuthorName(Convert.ToInt32(UserID));
+                titleLabel.Text = "Dashboard - " + authorName;
+            }
 
             // Search Panel
             Panel searchPanel = new Panel
             {
                 Height = 60,
                 Width = 600,
-                Location = new Point(titleLabel.Width + 30, 15),
+                Location = new Point(titleLabel.Width, 15),
                 Anchor = AnchorStyles.Top,
                 BackColor = Color.Transparent,
             };
@@ -501,7 +510,7 @@ namespace NoteApp
             {
                 Text = isApproved ? "✓ Approved" : "⏳ Pending",
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                ForeColor = isApproved ? Color.Green : Color.Brown,
+                ForeColor = isApproved ? Color.Green : Color.DarkOrange,
                 Location = new Point(cardWidth - 130, 215),
                 Size = new Size(120, 25),
                 TextAlign = ContentAlignment.MiddleRight

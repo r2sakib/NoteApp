@@ -72,6 +72,8 @@ namespace NoteApp
             lblUsername.Visible = false;
             lblName.Visible = false;
             btnConfirm.Enabled = false;
+
+            this.AcceptButton = btnConfirm;
         }
 
         private void btn_MouseEnter(object sender, EventArgs e)

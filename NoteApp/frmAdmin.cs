@@ -29,6 +29,8 @@ namespace Noteapp
 
             btnLogin.MouseEnter += btn_MouseEnter;
             btnLogin.MouseLeave += btn_MouseLeave;
+
+            this.AcceptButton = btnLogin;
         }
 
         private void btn_MouseEnter(object sender, EventArgs e)

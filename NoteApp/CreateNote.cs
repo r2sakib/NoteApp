@@ -22,6 +22,8 @@ namespace NoteApp
 
             submit.MouseEnter += btn_MouseEnter;
             submit.MouseLeave += btn_MouseLeave;
+
+            this.AcceptButton = submit;
         }
 
         private void btn_MouseEnter(object sender, EventArgs e)

@@ -43,7 +43,7 @@
             // 
             this.content.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.content.Location = new System.Drawing.Point(63, 179);
-            this.content.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.content.Margin = new System.Windows.Forms.Padding(2);
             this.content.Multiline = true;
             this.content.Name = "content";
             this.content.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -55,7 +55,7 @@
             // 
             this.title.Font = new System.Drawing.Font("Dubai", 12F);
             this.title.Location = new System.Drawing.Point(63, 90);
-            this.title.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.title.Margin = new System.Windows.Forms.Padding(2);
             this.title.Multiline = true;
             this.title.Name = "title";
             this.title.Size = new System.Drawing.Size(812, 29);
@@ -68,7 +68,7 @@
             this.submit.Font = new System.Drawing.Font("Dubai", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.submit.ForeColor = System.Drawing.Color.White;
             this.submit.Location = new System.Drawing.Point(683, 542);
-            this.submit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.submit.Margin = new System.Windows.Forms.Padding(2);
             this.submit.Name = "submit";
             this.submit.Size = new System.Drawing.Size(192, 42);
             this.submit.TabIndex = 2;
@@ -80,7 +80,7 @@
             // 
             this.tags.Font = new System.Drawing.Font("Dubai", 9F);
             this.tags.Location = new System.Drawing.Point(63, 551);
-            this.tags.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tags.Margin = new System.Windows.Forms.Padding(2);
             this.tags.Multiline = true;
             this.tags.Name = "tags";
             this.tags.Size = new System.Drawing.Size(298, 30);
@@ -90,13 +90,13 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Franklin Gothic Demi", 18F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Franklin Gothic Demi", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.MidnightBlue;
             this.label1.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.label1.Location = new System.Drawing.Point(58, 59);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 30);
+            this.label1.Size = new System.Drawing.Size(58, 30);
             this.label1.TabIndex = 6;
             this.label1.Text = "Title";
             this.label1.Click += new System.EventHandler(this.label1_Click);
@@ -153,7 +153,7 @@
             this.Controls.Add(this.title);
             this.Controls.Add(this.content);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "CreateNote";
             this.Text = "Create Note";
             this.Load += new System.EventHandler(this.Form1_Load);
