@@ -251,8 +251,16 @@ namespace NoteApp
                     FilterNotes("All");
                 }
             };
-
             searchPanel.Controls.Add(myNotesFilterBtn);
+
+            if (UserType == "User")
+            {
+                myNotesFilterBtn.Visible = true;
+            }
+            else if (UserType == "Admin")
+            {
+                myNotesFilterBtn.Visible = false;
+            }
 
 
             Panel rightPanel = new Panel
@@ -489,7 +497,7 @@ namespace NoteApp
                 Location = new Point(15, 155),
                 Size = new Size(cardWidth / 2 - 30, 25)
             };
-            if (UserID == note.AuthorID)
+            if (UserType == "User" && UserID == note.AuthorID)
             {
                 authorLabel.ForeColor = Color.MidnightBlue;
             }
